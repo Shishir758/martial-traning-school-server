@@ -161,6 +161,12 @@ async function run() {
       const result = await selectedClassesColl.deleteOne(query);
       res.json(result)
     })
+    
+    //user create route
+    app.post('/users', async (req, res) => {
+      const className=req.body;
+      const result = await userColl.insertOne(className);
+    })
 
 
     // Send a ping to confirm a successful connection
