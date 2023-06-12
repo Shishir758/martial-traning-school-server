@@ -133,6 +133,26 @@ async function run() {
         });
     });
 
+    //user usign id
+    app.patch('/users/:id', (req, res) => {
+      const id = req.params.id;
+      const updateRole = req.body;
+      userColl
+        .findOneAndUpdate(
+          { _id: new ObjectId(id) },
+          { $set: { role: updateRole.role } },
+          { returnOriginal: false }
+        )
+        .then(updatedDocument => {
+          res.json(updatedDocument.value);
+     
+        })
+        .catch(error => {
+          console.error(error);
+          res.status(500).json({ message: 'Error updating data' });
+        });
+    });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
