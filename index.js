@@ -86,6 +86,30 @@ async function run() {
         });
     });
 
+    app.patch('/updateclass/:id', (req, res) => {
+      const id = req.params.id;
+      const updatedInfo = req.body;
+    
+      classColl
+        .findOneAndUpdate(
+          { _id: new ObjectId(id) },
+          { $set: { 
+            className: updatedInfo.className, 
+            fees: updatedInfo.fees, 
+            seats: updatedInfo.seats 
+          } },
+          { returnOriginal: false }
+        )
+        .then(updatedDocument => {
+          res.json(updatedDocument.value);
+
+        })
+        .catch(error => {
+          console.error(error);
+          res.status(500).json({ message: 'Error updating data' });
+        });
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
