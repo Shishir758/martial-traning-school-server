@@ -37,7 +37,11 @@ async function run() {
     // const indexOptions = { name1: "toyname" }; // Replace index_name with the desired index name
     // const result = await myColl.createIndex(indexKeys, indexOptions);
 
-
+    //get data using user's email
+ app.get('/users/:email', async (req, res) => {
+      const result = await userColl.find({email: req.params.email }).toArray();
+      res.json(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
