@@ -173,6 +173,28 @@ async function run() {
       const result = await classColl.insertOne(className);
     })
 
+    //selected class and create payment route
+    app.post('/selectedClasses', async (req, res) => {
+      const selectedClass=req.body;
+
+      const result = await selectedClassesColl.insertOne(selectedClass);
+    })
+
+    
+    app.post('/createPayment', async(req, res)=>{
+      const {fees}=req.body;
+      const amount = fees*100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency : 'usd',
+        payment_method_types:['card']
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret
+      })
+      
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
