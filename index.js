@@ -32,40 +32,12 @@ async function run() {
     const userColl = myDB.collection("users");
     const classColl = myDB.collection("classes");
     const selectedClassesColl = myDB.collection("selectedClasses");
+    const paymentColl = myDB.collection("payment");
 
     // Creating index on two fields
     // const indexKeys = { name: 1 }; // Replace field1 and field2 with your actual field names
     // const indexOptions = { name1: "toyname" }; // Replace index_name with the desired index name
     // const result = await myColl.createIndex(indexKeys, indexOptions);
-
-
-
-    app.post('/webhook', async (req, res) => {
-      const event = req.body;
-    
-      try {
-        // Verify the event
-        const signature = req.headers['stripe-signature'];
-        const webhookEvent = stripe.webhooks.constructEvent(
-          req.body,
-          signature,
-          'your-stripe-webhook-secret'
-        );
-    
-        // Handle specific event types
-        if (webhookEvent.type === 'payment_intent.succeeded') {
-          const paymentIntent = webhookEvent.data.object;
-          // Handle successful payment
-          console.log('Payment succeeded:', paymentIntent);
-          // Perform additional actions like updating your database or sending confirmation emails
-        }
-    
-        res.sendStatus(200); // Send a success response to Stripe
-      } catch (error) {
-        console.error('Error handling webhook event:', error);
-        res.sendStatus(400); // Send an error response to Stripe
-      }
-    });
     
     // Start the server
     app.listen(3000, () => {
@@ -216,6 +188,13 @@ async function run() {
       res.send(result);
     })
 
+
+    app.post('/payment', async (req, res) => {
+      const paymentInfo=req.body;
+      const result = await paymentColl.insertOne(paymentInfo);
+      res.send(result);
+    })
+
     
     app.post('/createPayment', async(req, res)=>{
       const {fees}=req.body;
@@ -230,6 +209,8 @@ async function run() {
       })
       
     })
+
+    
 
 
     // Send a ping to confirm a successful connection
