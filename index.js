@@ -110,6 +110,30 @@ async function run() {
         });
     });
 
+    //feedback Route
+    app.patch('/feedback/:id', (req, res) => {
+      const id = req.params.id;
+      const feedback = req.body;
+    
+      classColl
+        .findOneAndUpdate(
+          { _id: new ObjectId(id) },
+          { $set: { 
+            feedback: feedback.feedback, 
+          } },
+          { returnOriginal: false }
+        )
+        .then(updatedDocument => {
+          res.json(updatedDocument.value);
+     
+        })
+        .catch(error => {
+          console.error(error);
+          res.status(500).json({ message: 'Error updating data' });
+        });
+    });
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
