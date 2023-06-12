@@ -167,6 +167,11 @@ async function run() {
       const className=req.body;
       const result = await userColl.insertOne(className);
     })
+//class add route
+    app.post('/classes', async (req, res) => {
+      const className=req.body;
+      const result = await classColl.insertOne(className);
+    })
 
 
     // Send a ping to confirm a successful connection
