@@ -3,11 +3,12 @@ const app = express()
 const cors = require('cors');
 require('dotenv').config()
 const stripe = require('stripe')(process.env.paymentSecretKey)
-
+const bodyParser = require('body-parser');
 const port = process.env.PORT || 5000;
 
 app.use(cors());;
 app.use(express.json());
+app.use(bodyParser.json());
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -36,6 +37,41 @@ async function run() {
     // const indexKeys = { name: 1 }; // Replace field1 and field2 with your actual field names
     // const indexOptions = { name1: "toyname" }; // Replace index_name with the desired index name
     // const result = await myColl.createIndex(indexKeys, indexOptions);
+
+
+
+    app.post('/webhook', async (req, res) => {
+      const event = req.body;
+    
+      try {
+        // Verify the event
+        const signature = req.headers['stripe-signature'];
+        const webhookEvent = stripe.webhooks.constructEvent(
+          req.body,
+          signature,
+          'your-stripe-webhook-secret'
+        );
+    
+        // Handle specific event types
+        if (webhookEvent.type === 'payment_intent.succeeded') {
+          const paymentIntent = webhookEvent.data.object;
+          // Handle successful payment
+          console.log('Payment succeeded:', paymentIntent);
+          // Perform additional actions like updating your database or sending confirmation emails
+        }
+    
+        res.sendStatus(200); // Send a success response to Stripe
+      } catch (error) {
+        console.error('Error handling webhook event:', error);
+        res.sendStatus(400); // Send an error response to Stripe
+      }
+    });
+    
+    // Start the server
+    app.listen(3000, () => {
+      console.log('Server is running on port 3000');
+    });
+
 
     //get data using user's email
  app.get('/users/:email', async (req, res) => {
@@ -176,8 +212,8 @@ async function run() {
     //selected class and create payment route
     app.post('/selectedClasses', async (req, res) => {
       const selectedClass=req.body;
-
       const result = await selectedClassesColl.insertOne(selectedClass);
+      res.send(result);
     })
 
     
