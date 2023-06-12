@@ -43,6 +43,22 @@ async function run() {
       res.json(result)
     })
 
+    //get all classes data
+    app.get('/classes', async (req, res) => {
+      const result = await classColl.find().limit(20).toArray();
+      res.json(result);
+    })
+    app.get('/selectedClasses/:email', async (req, res) => {
+      const email = req.params.email;
+      try {
+        const result = await selectedClassesColl.find({ email: email }).toArray();
+        res.json(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred' });
+      }
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
