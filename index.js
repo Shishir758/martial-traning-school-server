@@ -174,6 +174,7 @@ async function run() {
     app.post('/users', async (req, res) => {
       const className=req.body;
       const result = await userColl.insertOne(className);
+      res.send(result)
     })
 //class add route
     app.post('/classes', async (req, res) => {
