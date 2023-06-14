@@ -3,12 +3,12 @@ const app = express()
 const cors = require('cors');
 require('dotenv').config()
 const stripe = require('stripe')(process.env.paymentSecretKey)
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const port = process.env.PORT || 5000;
 
 app.use(cors());;
 app.use(express.json());
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -101,22 +101,26 @@ async function run() {
       classColl
         .findOneAndUpdate(
           { _id: new ObjectId(id) },
-          { $set: { 
-            className: updatedInfo.className, 
-            fees: updatedInfo.fees, 
-            seats: updatedInfo.seats 
-          } },
+          {
+            $set: {
+              className: updatedInfo.className,
+              fees: updatedInfo.fees,
+              seats: updatedInfo.seats
+            }
+          },
           { returnOriginal: false }
         )
         .then(updatedDocument => {
           res.json(updatedDocument.value);
-
+          console.log(updatedDocument);
         })
         .catch(error => {
           console.error(error);
           res.status(500).json({ message: 'Error updating data' });
         });
     });
+    
+    
 
     //feedback Route
     app.patch('/feedback/:id', (req, res) => {
@@ -196,7 +200,6 @@ async function run() {
       res.send(result);
     })
 
-    
     app.post('/createPayment', async(req, res)=>{
       const {fees}=req.body;
       const amount = fees*100;
