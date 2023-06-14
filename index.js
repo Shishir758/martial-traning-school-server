@@ -94,31 +94,22 @@ async function run() {
         });
     });
 
-    app.patch('/updateclass/:id', (req, res) => {
+    app.put('/updateclass/:id', async (req, res) => {
       const id = req.params.id;
-      const updatedInfo = req.body;
-    
-      classColl
-        .findOneAndUpdate(
-          { _id: new ObjectId(id) },
-          {
-            $set: {
-              className: updatedInfo.className,
-              fees: updatedInfo.fees,
-              seats: updatedInfo.seats
-            }
-          },
-          { returnOriginal: false }
-        )
-        .then(updatedDocument => {
-          res.json(updatedDocument.value);
-          console.log(updatedDocument);
-        })
-        .catch(error => {
-          console.error(error);
-          res.status(500).json({ message: 'Error updating data' });
-        });
+      const query = { _id: new ObjectId(id) };
+      const updateInfo = req.body;
+      const updateField = {
+        $set: {
+          className: updateInfo.className,
+          fees: updateInfo.fees,
+          seats: updateInfo.seats
+        }
+      };
+      const result = await classColl.updateOne(query, updateField);
+      res.json(result);
     });
+
+
     
     
 
